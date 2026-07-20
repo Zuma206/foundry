@@ -24,6 +24,7 @@ static void *heap_allocate(void *, size_t size) {
     out_of_memory();
   return ptr;
 }
+
 static void *heap_reallocate(void *, void *prev, size_t size) {
   void *ptr = realloc(prev, size);
   if (ptr == nullptr)
