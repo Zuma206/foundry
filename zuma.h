@@ -2,6 +2,7 @@
 #define zu_included
 
 #include <stddef.h>
+#include <stdint.h>
 
 /**
  * Prints to `stderr` before exiting the program with a failure status.
@@ -239,49 +240,125 @@ void *zu_new_vec_items(zu_allocator_t allocator, size_t item_size,
  */
 static inline size_t zu_len_vec(zu_vec_t vec) { return vec.length; }
 
+/**
+ * Interna procedure.
+ */
 void zu_pre_append(void **buffer, zu_vec_t *vec);
 
+/**
+ * Inline function that does nothinf and returns the `void` type, for using in
+ * `(a, b, c)` expressions to make them return void.
+ */
 static inline void zu_void() {}
 
+/**
+ * Append `value` into `buffer` using `vector`. Requires `buffer` to be a double
+ * pointer, as it may re-assign it in the case `buffer` has to be re-allocated.
+ */
 #define zu_append(vector, buffer, value)                                       \
   (zu_pre_append((void **)(buffer), (vector)),                                 \
    ((*(buffer))[zu_len(*vector) - 1] = (value)), zu_void())
 
+/**
+ * A string type containing a length, and a pointer to the character data.
+ */
 typedef struct {
   char *characters;
   size_t length;
 } zu_string_t;
 
+/**
+ * Convert a c-string literal into a compile-time generated string.
+ */
 #define zu_string(literal)                                                     \
   (zu_string_t){.characters = (literal), .length = sizeof(literal) - 1}
 
+/**
+ * Convert a string into
+ */
 #define zu_fmt(str) (int)str.length, str.characters
 
+/**
+ * Internal procedure.
+ */
 static inline size_t zu_len_string(zu_string_t string) { return string.length; }
 
+/**
+ * Internal procedure.
+ */
 zu_string_t zu_substring_start_length(zu_string_t string, size_t start,
                                       size_t length);
-
+/**
+ * Internal procedure.
+ */
 static inline zu_string_t zu_substring_start(zu_string_t string, size_t start) {
   return zu_substring_start_length(string, start, zu_len(string) - start);
 }
 
+/**
+ * Takes a subsection of `string`, from `start`, for the optional parameter
+ * `length` characters.
+ */
 #define zu_substring(string, start, ...)                                       \
   zu_substring_start##__VA_OPT__(_length)((string),                            \
                                           (start)__VA_OPT__(, (__VA_ARGS__)))
 
+/**
+ * Converts a value into a string.
+ */
 zu_string_t zu_to_string(char *cstr);
 
+/**
+ * Helper macro to determinte the smalllest of two values.
+ */
 #define zu_min(a, b) ((a) < (b) ? (a) : (b))
 
+/**
+ * Helper macro to determine the largest of two values.
+ */
 #define zu_max(a, b) ((a) > (b) ? (a) : (b))
 
+/**
+ * Internal procedure.
+ */
 bool zu_equals_string(zu_string_t a, zu_string_t b);
 
+/**
+ * Checks if two instance of a type are the same value.
+ */
 #define zu_equals(o, ...)                                                      \
   _Generic((o), string_t: zu_equals_string)((o)__VA_OPT__(, __VA_ARGS__))
 
+/**
+ * Convert a boolean to a c-string.
+ */
 static inline char *zu_to_cstr(bool b) { return b ? "true" : "false"; }
+
+/**
+ * Internal procedure
+ */
+uint64_t zu_hash_buffer(uint8_t *buffer, size_t length, bool stop_at_null);
+
+/**
+ * Internal procedure
+ */
+static inline uint64_t zu_hash_string(zu_string_t s) {
+  return zu_hash_buffer((uint8_t *)s.characters, zu_len(s), false);
+}
+
+/**
+ * Internal procedure
+ */
+static inline uint64_t zu_hash_cstr(char *cstr) {
+  return zu_hash_buffer((uint8_t *)cstr, SIZE_MAX, true);
+}
+
+/**
+ * Hash a string into a 64-bit number using the FNV-1a algorithm. This algorithm
+ * is non-cryptographic.
+ */
+#define zu_hash(o)                                                             \
+  _Generic((o), char *: zu_hash_cstr, zu_string_t: zu_hash_string)((o))
 
 #ifndef zu_force_prefix
 
@@ -318,6 +395,7 @@ typedef zu_string_t string_t;
 #define max zu_max
 #define equals zu_equals
 #define to_cstr zu_to_cstr
+#define hash zu_hash
 
 #endif
 

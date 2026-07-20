@@ -2,6 +2,7 @@
 #include <memory.h>
 #include <stdarg.h>
 #include <stddef.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -255,4 +256,16 @@ zu_string_t zu_to_string(char *cstr) {
 
 bool zu_equals_string(string_t a, string_t b) {
   return strncmp(a.characters, b.characters, min(len(a), len(b))) == 0;
+}
+
+#define fvn_offset_basis 0xcbf29ce484222325
+#define fvn_prime 0x100000001b3
+
+uint64_t zu_hash_buffer(uint8_t *buffer, size_t length, bool stop_at_null) {
+  uint64_t result = fvn_offset_basis;
+  for (size_t i = 0; i < length && (buffer[i] != '\0' || !stop_at_null); i++) {
+    result ^= buffer[i];
+    result *= fvn_prime;
+  }
+  return result;
 }

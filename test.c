@@ -75,5 +75,11 @@ int main() {
     }
   }
 
+  { // Hashing
+    uint64_t hw = hash("Hello World");
+    uint64_t hw2 = hash(string("Hello World"));
+    printf("0x3D58DEE72D4E0C27 = 0x%lX = 0x%lX\n", hw, hw2);
+  }
+
   panic("This is a planned panic! Program should now exit with status 1\n");
 }
