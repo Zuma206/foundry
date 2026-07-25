@@ -1,8 +1,11 @@
 #ifndef zu_included
 #define zu_included
 
+#include <assert.h>
 #include <stddef.h>
 #include <stdint.h>
+
+static_assert(sizeof(char) == 1, "libzuma requires a C `char` to be 1 byte");
 
 /**
  * Prints to `stderr` before exiting the program with a failure status.
@@ -357,8 +360,7 @@ static inline uint64_t zu_hash_cstr(char *cstr) {
  * Hash a string into a 64-bit number using the FNV-1a algorithm. This algorithm
  * is non-cryptographic.
  */
-#define zu_hash(o)                                                             \
-  _Generic((o), char *: zu_hash_cstr, zu_string_t: zu_hash_string)((o))
+uint64_t zu_hash(zu_string_t s);
 
 #ifndef zu_force_prefix
 

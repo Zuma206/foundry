@@ -261,10 +261,10 @@ bool zu_equals_string(string_t a, string_t b) {
 #define fvn_offset_basis 0xcbf29ce484222325
 #define fvn_prime 0x100000001b3
 
-uint64_t zu_hash_buffer(uint8_t *buffer, size_t length, bool stop_at_null) {
+uint64_t zu_hash(string_t s) {
   uint64_t result = fvn_offset_basis;
-  for (size_t i = 0; i < length && (buffer[i] != '\0' || !stop_at_null); i++) {
-    result ^= buffer[i];
+  for (size_t i = 0; i < len(s); i++) {
+    result ^= s.characters[i];
     result *= fvn_prime;
   }
   return result;
