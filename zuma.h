@@ -223,9 +223,9 @@ typedef struct {
  * values to store in the vector by default.
  */
 #define zu_new_vec(allocator, T, vec, ...)                                     \
-  ((T *)zu_new_vec_items((allocator), sizeof(T), (vec),                        \
-                         sizeof((T[]){__VA_ARGS__}) / sizeof(T),               \
-                         (T[]){__VA_ARGS__}))
+  ((T *)zu_new_vec_manual((allocator), sizeof(T), (vec),                       \
+                          sizeof((T[]){__VA_ARGS__}) / sizeof(T),              \
+                          (T[]){__VA_ARGS__}))
 
 /**
  * Internal procedure.
