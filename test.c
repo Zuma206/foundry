@@ -13,7 +13,7 @@ int main() {
 
   { // Arena tests
     arena_t *arena = new_arena(heap);
-    allocator_t allocator = arena->allocator;
+    allocator_t allocator = to_allocator(arena);
     int *count = allocate(allocator, int);
     char *buffer = allocate(allocator, char, *kib(4));
     *count = 22;
@@ -76,7 +76,7 @@ int main() {
   }
 
   { // Hashing
-    uint64_t hw = hash("Hello World");
+    uint64_t hw = hash(string("Hello World"));
     uint64_t hw2 = hash(string("Hello World"));
     printf("0x3D58DEE72D4E0C27 = 0x%lX = 0x%lX\n", hw, hw2);
   }
