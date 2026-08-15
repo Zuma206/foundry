@@ -230,12 +230,22 @@ static inline size_t vec_next_capacity(size_t capacity, size_t desired_length) {
   return next_capacity;
 }
 
+void zu_resize(zu_vec_t *vec, size_t size) {
+  if (size < vec->capacity)
+    panic("zu_resize called with size %ld, which is smaller than current "
+          "vector capacity %ld",
+          size, vec->capacity);
+  vec->capacity = size;
+  vec->buffer = reallocate_buffer(vec->allocator, vec->buffer,
+                                  vec->capacity * vec->item_size);
+}
+
 static inline bool vec_full(vec_t *vec) { return vec->length >= vec->capacity; }
 
 static inline void *vec_grow(vec_t *vec) {
-  vec->capacity = vec_next_capacity(vec->capacity, vec->length + 1);
-  return vec->buffer = reallocate_buffer(vec->allocator, vec->buffer,
-                                         vec->capacity * vec->item_size);
+  size_t next_capacity = vec_next_capacity(vec->capacity, vec->length + 1);
+  zu_resize(vec, next_capacity);
+  return vec->buffer;
 }
 
 void zu_pre_append(void **buffer, vec_t *vec) {

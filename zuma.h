@@ -362,6 +362,8 @@ static inline uint64_t zu_hash_cstr(char *cstr) {
  */
 uint64_t zu_hash(zu_string_t s);
 
+void zu_resize(zu_vec_t *vec, size_t size);
+
 #ifndef zu_force_prefix
 
 #define panic zu_panic
