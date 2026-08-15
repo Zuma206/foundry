@@ -229,8 +229,8 @@ typedef struct {
 /**
  * Internal procedure.
  */
-void *zu_new_vec_items(zu_allocator_t allocator, size_t item_size,
-                       zu_vec_t *vec, size_t items_length, void *items);
+void *zu_new_vec_manual(zu_allocator_t allocator, size_t item_size,
+                        zu_vec_t *vec, size_t items_length, void *items);
 
 /**
  * Takes the length of an object.

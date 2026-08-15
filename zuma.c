@@ -209,8 +209,8 @@ void zu_destroy_tracker(zu_tracker_t *tracker) {
   deallocate(tracker->backing_allocator, tracker);
 }
 
-void *zu_new_vec_items(zu_allocator_t allocator, size_t item_size, vec_t *vec,
-                       size_t items_length, void *items) {
+void *zu_new_vec_manual(zu_allocator_t allocator, size_t item_size, vec_t *vec,
+                        size_t items_length, void *items) {
   size_t items_size = item_size * items_length;
   if (items_length > 0)
     vec->buffer = allocate_buffer(allocator, items_size);
