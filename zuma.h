@@ -139,7 +139,8 @@ void zu_destroy_arena(zu_arena_t *arena);
 #define zu_destroy(o)                                                          \
   _Generic((o),                                                                \
       zu_arena_t *: zu_destroy_arena,                                          \
-      zu_tracker_t *: zu_destroy_tracker)((o))
+      zu_tracker_t *: zu_destroy_tracker,                                      \
+      zu_vec_t *: zu_destroy_vec)((o))
 
 typedef struct {
   void *buffer;
@@ -363,6 +364,10 @@ static inline uint64_t zu_hash_cstr(char *cstr) {
 uint64_t zu_hash(zu_string_t s);
 
 void zu_resize(zu_vec_t *vec, size_t size);
+
+static inline void zu_destroy_vec(zu_vec_t *vec) {
+  zu_deallocate(vec->allocator, vec->buffer);
+}
 
 #ifndef zu_force_prefix
 
