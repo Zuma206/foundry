@@ -377,3 +377,66 @@ bool zu_drop(zu_dict_t *dict, zu_string_t key) {
   deallocate(dict->allocator, bucket);
   return true;
 }
+
+#define context_empty 0
+#define context_unhandled 1
+#define context_handled 2
+
+static void context_set_state(zu_context_t *ctx) {
+  if (ctx->state == context_unhandled)
+    panic("fatal context error: attempted to raise an error in a context which "
+          "already contained an unhandled error (type = %d, message = %s)",
+          ctx->error.type, ctx->error.message);
+  ctx->state = context_unhandled;
+}
+
+static void raise_args(zu_context_t *ctx, uint32_t type, char *fmt,
+                       va_list args) {
+  context_set_state(ctx);
+  ctx->error.type = type;
+  vsnprintf(ctx->error.message, sizeof(ctx->error.message), fmt, args);
+}
+
+void zu_raise_type(zu_context_t *ctx, uint32_t type, char *fmt, ...) {
+  va_list args;
+  va_start(args, fmt);
+  raise_args(ctx, type, fmt, args);
+  va_end(args);
+}
+
+void zu_raise_message(zu_context_t *ctx, char *fmt, ...) {
+  va_list args;
+  va_start(args, fmt);
+  raise_args(ctx, zu_error_unknown, fmt, args);
+  va_end(args);
+}
+
+void zu_raise_error(zu_context_t *ctx, zu_error_t *error) {
+  context_set_state(ctx);
+  ctx->error = *error;
+}
+
+void zu_raise_context(zu_context_t *new_ctx, zu_context_t *old_ctx) {
+  zu_raise_error(new_ctx, &old_ctx->error);
+}
+
+bool zu_check(zu_context_t *ctx) { return ctx->state != context_empty; }
+
+bool zu_handle(zu_context_t *ctx) {
+  if (ctx->state == context_unhandled) {
+    ctx->state = context_handled;
+    return true;
+  }
+  return false;
+}
+
+zu_context_t zu_make_context() {
+  return (zu_context_t){
+      .state = context_empty,
+      .error =
+          {
+              .type = zu_error_unknown,
+              .message = "",
+          },
+  };
+}
