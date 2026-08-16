@@ -1,4 +1,5 @@
 #include "zuma.h"
+#include <alloca.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -79,6 +80,26 @@ int main() {
     uint64_t hw = hash(string("Hello World"));
     uint64_t hw2 = hash(string("Hello World"));
     printf("0x3D58DEE72D4E0C27 = 0x%lX = 0x%lX\n", hw, hw2);
+  }
+
+  { // Dictionaries
+    tracker_t *tracker = new_tracker(heap);
+    allocator_t allocator = to_allocator(tracker);
+    dict_t scores_d;
+    int *scores = new_dict(allocator, int, &scores_d, {string("player_1"), 200},
+                           {string("player_2"), 400});
+    put(&scores_d, &scores, string("player_3"), 34);
+    printf("200 = %d\n", get(&scores_d, &scores, string("player_1")));
+    printf("34 = %d\n", get(&scores_d, &scores, string("player_3")));
+    printf("400 = %d\n", get(&scores_d, &scores, string("player_2")));
+    printf("true = %s = %s\n", to_cstr(has(&scores_d, string("player_1"))),
+           to_cstr(has(&scores_d, string("player_2"))));
+    printf("false = %s = %s\n", to_cstr(has(&scores_d, string("fred"))),
+           to_cstr(has(&scores_d, string("Player_2"))));
+    printf("true = %s\n", to_cstr(has(&scores_d, string("player_1"))));
+    drop(&scores_d, string("player_1"));
+    printf("false = %s\n", to_cstr(has(&scores_d, string("player_1"))));
+    destroy(tracker);
   }
 
   panic("This is a planned panic! Program should now exit with status 1\n");

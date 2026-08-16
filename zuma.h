@@ -369,6 +369,48 @@ static inline void zu_destroy_vec(zu_vec_t *vec) {
   zu_deallocate(vec->allocator, vec->buffer);
 }
 
+typedef struct zu_bucket zu_bucket_t;
+
+typedef struct {
+  zu_allocator_t allocator;
+  zu_bucket_t **buckets;
+  size_t value_size;
+  size_t capacity;
+  size_t size;
+  void *buffer;
+} zu_dict_t;
+
+#define zu_pair(T)                                                             \
+  struct {                                                                     \
+    string_t key;                                                              \
+    T value;                                                                   \
+  }
+
+#define zu_new_dict(allocator, T, dict, ...)                                   \
+  zu_new_dict_manual((allocator), sizeof(T), (dict),                           \
+                     sizeof((zu_pair(T)[]){__VA_ARGS__}) / sizeof(zu_pair(T)), \
+                     sizeof(zu_pair(T)), offsetof(zu_pair(T), value),          \
+                     (zu_pair(T)[]){__VA_ARGS__})
+
+void *zu_new_dict_manual(zu_allocator_t allocator, size_t value_size,
+                         zu_dict_t *dict, size_t pairs_length, size_t pair_size,
+                         size_t pair_value_offset, void *pairs);
+
+void zu_pre_put(zu_dict_t *dict, void **buffer, zu_string_t key);
+
+void zu_pre_get(zu_dict_t *dict, void **buffer, zu_string_t key);
+
+#define zu_put(dict, buffer, key, value)                                       \
+  (zu_pre_put((dict), (void **)(buffer), (key)), (**(buffer)) = value,         \
+   zu_void())
+
+#define zu_get(dict, buffer, key)                                              \
+  (zu_pre_get((dict), (void **)(buffer), (key)), **(buffer))
+
+bool zu_has(zu_dict_t *dict, zu_string_t key);
+
+bool zu_drop(zu_dict_t *dict, zu_string_t key);
+
 #ifndef zu_force_prefix
 
 #define panic zu_panic
@@ -405,6 +447,12 @@ typedef zu_string_t string_t;
 #define equals zu_equals
 #define to_cstr zu_to_cstr
 #define hash zu_hash
+#define put zu_put
+#define get zu_get
+#define new_dict zu_new_dict
+typedef zu_dict_t dict_t;
+#define has zu_has
+#define drop zu_drop
 
 #endif
 
