@@ -169,6 +169,8 @@ static void *tracker_reallocate(void *data, void *ptr, size_t size) {
 }
 
 static void tracker_deallocate(void *data, void *ptr) {
+  if (ptr == nullptr)
+    return;
   zu_tracker_t *tracker = data;
   zu_tracker_allocation_t *allocation = get_tracker_allocation(ptr);
   if (allocation->prev != nullptr)

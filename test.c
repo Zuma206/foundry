@@ -1,4 +1,5 @@
 #include "zuma.h"
+#include <alloca.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -82,8 +83,10 @@ int main() {
   }
 
   { // Dictionaries
+    tracker_t *tracker = new_tracker(heap);
+    allocator_t allocator = to_allocator(tracker);
     dict_t scores_d;
-    int *scores = new_dict(heap, int, &scores_d, {string("player_1"), 200},
+    int *scores = new_dict(allocator, int, &scores_d, {string("player_1"), 200},
                            {string("player_2"), 400});
     put(&scores_d, &scores, string("player_3"), 34);
     printf("200 = %d\n", get(&scores_d, &scores, string("player_1")));
@@ -93,6 +96,7 @@ int main() {
            to_cstr(has(&scores_d, string("player_2"))));
     printf("false = %s = %s\n", to_cstr(has(&scores_d, string("fred"))),
            to_cstr(has(&scores_d, string("Player_2"))));
+    destroy(tracker);
   }
 
   panic("This is a planned panic! Program should now exit with status 1\n");
