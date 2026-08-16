@@ -277,3 +277,83 @@ uint64_t zu_hash(string_t s) {
   }
   return result;
 }
+
+void *zu_new_dict_manual(zu_allocator_t allocator, size_t value_size,
+                         zu_dict_t *dict, size_t pairs_length, size_t pair_size,
+                         size_t pair_value_offset, void *pairs) {
+  dict->value_size = value_size;
+  dict->allocator = allocator;
+  dict->buckets = nullptr;
+  dict->capacity = 0;
+  dict->size = 0;
+  dict->buffer = nullptr;
+  for (size_t i = 0; i < pairs_length; i++) {
+    void *pair = pairs + pair_size * i;
+    string_t *key = pair;
+    void *value = pair + pair_value_offset;
+    void *buffer = dict->buffer;
+    zu_pre_put(dict, &buffer, *key);
+    memcpy(buffer, value, value_size);
+  }
+  return dict->buffer;
+}
+
+struct zu_bucket {
+  struct zu_bucket *next;
+  string_t key;
+  char buffer[];
+};
+
+#define dict_load_factor 0.6
+
+static inline bool dict_over_threshold(zu_dict_t *dict) {
+  return dict->size >= (dict->capacity * dict_load_factor);
+}
+
+static inline void dict_grow(zu_dict_t *dict) {
+  zu_bucket_t **old_buckets = dict->buckets;
+  size_t old_capacity = dict->capacity;
+  dict->capacity = dict->capacity > 0 ? dict->capacity * 2 : 1;
+  dict->buckets = allocate(dict->allocator, zu_bucket_t *, *dict->capacity);
+  memset(dict->buckets, 0, sizeof(zu_bucket_t *) * dict->capacity);
+  for (size_t old_i = 0; old_i < old_capacity; old_i++) {
+    zu_bucket_t *bucket = old_buckets[old_i];
+    while (bucket != nullptr) {
+      zu_bucket_t *next = bucket->next;
+      size_t new_i = hash(bucket->key) % dict->capacity;
+      bucket->next = dict->buckets[new_i];
+      dict->buckets[new_i] = bucket;
+      bucket = next;
+    }
+  }
+  deallocate(dict->allocator, old_buckets);
+}
+
+void zu_pre_put(zu_dict_t *dict, void **buffer, zu_string_t key) {
+  if (dict_over_threshold(dict))
+    dict_grow(dict);
+  zu_bucket_t **bucket_ptr = &dict->buckets[hash(key) % dict->capacity];
+  while (*bucket_ptr != nullptr && !equals((*bucket_ptr)->key, key))
+    bucket_ptr = &(*bucket_ptr)->next;
+  if (*bucket_ptr == nullptr) {
+    *bucket_ptr = allocate(dict->allocator, zu_bucket_t, +dict->value_size);
+    zu_bucket_t *bucket = *bucket_ptr;
+    bucket->key.length = key.length;
+    bucket->key.characters = allocate(dict->allocator, char, *key.length);
+    memcpy(bucket->key.characters, key.characters, key.length);
+    bucket->next = nullptr;
+    dict->size++;
+  }
+  dict->buffer = *buffer = (*bucket_ptr)->buffer;
+}
+
+void zu_pre_get(zu_dict_t *dict, void **buffer, zu_string_t key) {
+  zu_bucket_t *bucket = dict->buckets[zu_hash(key) % dict->capacity];
+  while (bucket != nullptr) {
+    if (equals(bucket->key, key)) {
+      *buffer = bucket->buffer;
+      return;
+    }
+  }
+  panic("key `%.*s` could not be found in dict", fmt(key));
+}

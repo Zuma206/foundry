@@ -81,5 +81,15 @@ int main() {
     printf("0x3D58DEE72D4E0C27 = 0x%lX = 0x%lX\n", hw, hw2);
   }
 
+  { // Dictionaries
+    dict_t scores_d;
+    int *scores = new_dict(heap, int, &scores_d, {string("player_1"), 200},
+                           {string("player_2"), 400});
+    put(&scores_d, &scores, string("player_3"), 34);
+    printf("200 = %d\n", get(&scores_d, &scores, string("player_1")));
+    printf("34 = %d\n", get(&scores_d, &scores, string("player_3")));
+    printf("400 = %d\n", get(&scores_d, &scores, string("player_2")));
+  }
+
   panic("This is a planned panic! Program should now exit with status 1\n");
 }
