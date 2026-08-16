@@ -96,6 +96,9 @@ int main() {
            to_cstr(has(&scores_d, string("player_2"))));
     printf("false = %s = %s\n", to_cstr(has(&scores_d, string("fred"))),
            to_cstr(has(&scores_d, string("Player_2"))));
+    printf("true = %s\n", to_cstr(has(&scores_d, string("player_1"))));
+    drop(&scores_d, string("player_1"));
+    printf("false = %s\n", to_cstr(has(&scores_d, string("player_1"))));
     destroy(tracker);
   }
 
