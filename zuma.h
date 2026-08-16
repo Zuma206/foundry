@@ -407,6 +407,8 @@ void zu_pre_get(zu_dict_t *dict, void **buffer, zu_string_t key);
 #define zu_get(dict, buffer, key)                                              \
   (zu_pre_get((dict), (void **)(buffer), (key)), **(buffer))
 
+bool zu_has(zu_dict_t *dict, zu_string_t key);
+
 #ifndef zu_force_prefix
 
 #define panic zu_panic
@@ -447,6 +449,7 @@ typedef zu_string_t string_t;
 #define get zu_get
 #define new_dict zu_new_dict
 typedef zu_dict_t dict_t;
+#define has zu_has
 
 #endif
 

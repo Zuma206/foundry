@@ -347,13 +347,21 @@ void zu_pre_put(zu_dict_t *dict, void **buffer, zu_string_t key) {
   dict->buffer = *buffer = (*bucket_ptr)->buffer;
 }
 
+static zu_bucket_t *dict_get_bucket(zu_dict_t *dict, zu_string_t key) {
+  for (zu_bucket_t *bucket = dict->buckets[zu_hash(key) % dict->capacity];
+       bucket != nullptr; bucket = bucket->next)
+    if (equals(bucket->key, key))
+      return bucket;
+  return nullptr;
+}
+
 void zu_pre_get(zu_dict_t *dict, void **buffer, zu_string_t key) {
-  zu_bucket_t *bucket = dict->buckets[zu_hash(key) % dict->capacity];
-  while (bucket != nullptr) {
-    if (equals(bucket->key, key)) {
-      *buffer = bucket->buffer;
-      return;
-    }
-  }
-  panic("key `%.*s` could not be found in dict", fmt(key));
+  zu_bucket_t *bucket = dict_get_bucket(dict, key);
+  if (bucket == nullptr)
+    panic("key `%.*s` could not be found in dict", fmt(key));
+  *buffer = bucket->buffer;
+}
+
+bool zu_has(zu_dict_t *dict, zu_string_t key) {
+  return dict_get_bucket(dict, key) != nullptr;
 }

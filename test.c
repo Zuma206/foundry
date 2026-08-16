@@ -89,6 +89,10 @@ int main() {
     printf("200 = %d\n", get(&scores_d, &scores, string("player_1")));
     printf("34 = %d\n", get(&scores_d, &scores, string("player_3")));
     printf("400 = %d\n", get(&scores_d, &scores, string("player_2")));
+    printf("true = %s = %s\n", to_cstr(has(&scores_d, string("player_1"))),
+           to_cstr(has(&scores_d, string("player_2"))));
+    printf("false = %s = %s\n", to_cstr(has(&scores_d, string("fred"))),
+           to_cstr(has(&scores_d, string("Player_2"))));
   }
 
   panic("This is a planned panic! Program should now exit with status 1\n");
