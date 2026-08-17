@@ -542,7 +542,7 @@ typedef fy_string_t string_t;
 #define min fy_min
 #define max fy_max
 #define equals fy_equals
-#define to_cstr fy_to_cstr
+#define to_chars fy_to_chars
 #define hash fy_hash
 #define put fy_put
 #define get fy_get
