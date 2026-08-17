@@ -1,5 +1,9 @@
 # Foundry
 
+<img alt="Foundry Logo" src="foundry.svg" height="100" />
+
+## About
+
 A foundational memory management, data-structure, and error handling library for modern C.
 
 _[License: GPLv3](LICENSE)_
