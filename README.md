@@ -27,7 +27,7 @@ int *scores = new_dict(heap, int, &scores_d,
 );
 
 put(&scores_d, &scores, string("Player_26"), 300);
-drop(&scores_d, string("Player_2"));
+erase(&scores_d, string("Player_2"));
 if (has(&scores_d, string("Zuma"))) {
   int score = get(&scores_d, &scores, string("Zuma"));
   printf("Your score is: %d\n", score);
@@ -101,4 +101,13 @@ int main() {
   if (handle(ctx))
     panic("second division failed: %s", ctx->error.message);
 }
+```
+
+## Namespacing / Prefixing
+
+```c
+#define fy_force_prefix
+// by defining this macro, all non-prefixed symbols are removed from the global namespace.
+#include <foundry.h>
+// by default, all symbols are available with or without the `fy` prefix.
 ```

@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 
-static int safe_divide(int a, int b, zu_context_t *ctx) {
+static int safe_divide(int a, int b, fy_context_t *ctx) {
   if (b == 0)
     return (zu_raise(ctx, "Not safe to divide %d by %d", a, b), 0);
   return a / b;
