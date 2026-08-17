@@ -1,8 +1,8 @@
 cc ?= cc
 ccf = $(cc) $(cflags) -Wall -Wextra -Werror -std=c23
 
-libzuma.o: zuma.c zuma.h
-	$(ccf) -o $@ -c zuma.c
+foundry.o: foundry.c foundry.h
+	$(ccf) -o $@ -c foundry.c
 
-test: test.c libzuma.o
-	$(ccf) -o $@ $^
+test: test.c foundry.o foundry.h
+	$(ccf) -o $@ test.c foundry.o
