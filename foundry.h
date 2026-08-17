@@ -100,7 +100,7 @@ static inline size_t fy_gib(size_t n) { return fy_mib(n) * 1024; }
 /**
  * Internal procedure
  */
-#define fy_new_arena_(allocator) fy_new_arena_page_size((allocator), zu_kib(4))
+#define fy_new_arena_(allocator) fy_new_arena_page_size((allocator), fy_kib(4))
 
 /**
  * A page allocated by an arena allocator
@@ -354,7 +354,7 @@ void fy_reserve(fy_vec_t *vec, size_t size);
 /**
  * Internal procedure.
  */
-static inline void zu_destroy_vec(fy_vec_t *vec) {
+static inline void fy_destroy_vec(fy_vec_t *vec) {
   fy_deallocate(vec->allocator, vec->buffer);
 }
 

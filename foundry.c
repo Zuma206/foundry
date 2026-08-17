@@ -42,7 +42,7 @@ static fy_allocator_vtable_t heap_vtable = {
     .allocate_impl = heap_allocate,
 };
 
-fy_allocator_t zu_heap = {
+fy_allocator_t fy_heap = {
     .vtable = &heap_vtable,
     .data = nullptr,
 };
@@ -89,7 +89,7 @@ fy_arena_t *fy_new_arena_page_size(fy_allocator_t allocator, size_t page_size) {
   return arena;
 }
 
-void zu_destroy_arena(fy_arena_t *arena) {
+void fy_destroy_arena(fy_arena_t *arena) {
   while (arena->page != nullptr) {
     fy_page_t *page = arena->page;
     arena->page = page->prev;
