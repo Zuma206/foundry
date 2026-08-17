@@ -1,6 +1,6 @@
 # Foundry
 
-![Foundry Logo](foundry.svg)
+<img alt="Foundry Logo" src="foundry.svg" height="100" />
 
 ## About
 
