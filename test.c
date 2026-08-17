@@ -3,6 +3,12 @@
 #include <stdio.h>
 #include <string.h>
 
+static int safe_divide(int a, int b, zu_context_t *ctx) {
+  if (b == 0)
+    return (zu_raise(ctx, "Not safe to divide %d by %d", a, b), 0);
+  return a / b;
+}
+
 int main() {
   { // Heap tests
     int *count = allocate(heap, int);
@@ -100,6 +106,15 @@ int main() {
     drop(&scores_d, string("player_1"));
     printf("false = %s\n", to_cstr(has(&scores_d, string("player_1"))));
     destroy(tracker);
+  }
+
+  { // Error handling
+    context_t ctx = make_context();
+    int result = safe_divide(10, 5, &ctx);
+    printf("false = %s\n", to_cstr(check(&ctx)));
+    result = safe_divide(20, 0, &ctx);
+    printf("true = %s\n", to_cstr(check(&ctx)));
+    printf("0 = %d\n", result);
   }
 
   panic("This is a planned panic! Program should now exit with status 1\n");

@@ -411,6 +411,39 @@ bool zu_has(zu_dict_t *dict, zu_string_t key);
 
 bool zu_drop(zu_dict_t *dict, zu_string_t key);
 
+typedef struct {
+  char message[128];
+  uint32_t type;
+} zu_error_t;
+
+typedef struct {
+  zu_error_t error;
+  uint8_t state;
+} zu_context_t;
+
+void zu_raise_type(zu_context_t *ctx, uint32_t type, char *fmt, ...);
+
+void zu_raise_message(zu_context_t *ctx, char *fmt, ...);
+
+void zu_raise_error(zu_context_t *ctx, zu_error_t *error);
+
+void zu_raise_context(zu_context_t *new_ctx, zu_context_t *old_ctx);
+
+bool zu_check(zu_context_t *ctx);
+
+bool zu_handle(zu_context_t *ctx);
+
+zu_context_t zu_make_context();
+
+#define zu_raise(a0, a1, ...)                                                  \
+  _Generic((a1),                                                               \
+      uint32_t: zu_raise_type,                                                 \
+      char *: zu_raise_message,                                                \
+      zu_error_t *: zu_raise_error,                                            \
+      zu_context_t *: zu_raise_context)((a0), (a1)__VA_OPT__(, __VA_ARGS__))
+
+#define zu_error_unknown UINT32_MAX
+
 #ifndef zu_force_prefix
 
 #define panic zu_panic
@@ -453,6 +486,13 @@ typedef zu_string_t string_t;
 typedef zu_dict_t dict_t;
 #define has zu_has
 #define drop zu_drop
+typedef zu_error_t error_t;
+typedef zu_context_t context_t;
+#define check zu_check
+#define handle zu_handle
+#define raise zu_raise
+#define make_context zu_make_context
+#define error_unknown zu_error_unknown
 
 #endif
 
