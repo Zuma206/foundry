@@ -39,7 +39,7 @@ if (has(&scores_d, string("Zuma"))) {
 // Fully typesafe, trying to put anything other than integers into this dictionary causes compile time errors.
 ```
 
-## Memory Allocators
+### Memory Allocators
 
 ```C
 // create a new arena backed by the heap
@@ -56,7 +56,7 @@ float *z = allocate(allocator, float);
 destroy(arena);
 ```
 
-## Strings
+### Strings
 
 ```c
 // Length is stored with name, and calculated at compile time.
@@ -69,7 +69,7 @@ string_t other_name = to_string(other_name_cstr);
 printf("%d %d\n", len(name), len(other_name));
 ```
 
-## Vectors
+### Vectors
 
 ```c
 vec_t users_d;
@@ -85,7 +85,7 @@ for (size_t i = 0; i < len(users_d); i++)
   printf("Hello, %.*s\n", fmt(users[i]));
 ```
 
-## Error Handling
+### Error Handling
 
 ```c
 // This function accepting a context indicates it can produce an error that must be handled by a caller.
@@ -107,7 +107,7 @@ int main() {
 }
 ```
 
-## Namespacing / Prefixing
+### Namespacing / Prefixing
 
 ```c
 #define fy_force_prefix
