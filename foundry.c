@@ -54,7 +54,8 @@ static void *arena_allocate(void *data, size_t size) {
              "page size\n",
              size, arena->page_size);
   if (arena->page == nullptr || size > arena->page_size - arena->used) {
-    fy_page_t *page = fy_allocate(arena->page_allocator, fy_page_t);
+    fy_page_t *page =
+        fy_allocate(arena->page_allocator, fy_page_t, +arena->page_size);
     page->prev = arena->page;
     arena->page = page;
     arena->used = 0;
