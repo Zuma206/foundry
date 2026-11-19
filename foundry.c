@@ -83,10 +83,6 @@ fy_arena_t *fy_new_arena_page_size(fy_allocator_t allocator, size_t page_size) {
   arena->page_size = page_size;
   arena->page = nullptr;
   arena->used = 0;
-  arena->allocator = (fy_allocator_t){
-      .vtable = &arena_vtable,
-      .data = arena,
-  };
   return arena;
 }
 
