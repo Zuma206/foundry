@@ -117,7 +117,6 @@ typedef struct fy_page {
  */
 typedef struct {
   fy_allocator_t page_allocator;
-  fy_allocator_t allocator;
   fy_page_t *page;
   size_t page_size;
   size_t used;
